@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Damien P. George
+ * Copyright (c) 2019-2020 Damien P. George
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+#ifndef MICROPY_INCLUDED_STM32_MBOOT_MBOOT_H
+#define MICROPY_INCLUDED_STM32_MBOOT_MBOOT_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -34,6 +36,9 @@
 #define ELEM_DATA_START (&_estack[0])
 #define ELEM_DATA_MAX (&_estack[ELEM_DATA_SIZE])
 
+#define NORETURN __attribute__((noreturn))
+#define MP_ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 enum {
     ELEM_TYPE_END = 1,
     ELEM_TYPE_MOUNT,
@@ -42,17 +47,18 @@ enum {
 
 enum {
     ELEM_MOUNT_FAT = 1,
+    ELEM_MOUNT_LFS1,
+    ELEM_MOUNT_LFS2,
 };
-
-typedef struct _fsload_bdev_t {
-    uint32_t base_addr;
-    uint32_t byte_len;
-} fsload_bdev_t;
 
 extern uint8_t _estack[ELEM_DATA_SIZE];
 
 uint32_t get_le32(const uint8_t *b);
 void led_state_all(unsigned int mask);
+
+int hw_page_erase(uint32_t addr, uint32_t *next_addr);
+void hw_read(uint32_t addr, int len, uint8_t *buf);
+int hw_write(uint32_t addr, const uint8_t *src8, size_t len);
 
 int do_page_erase(uint32_t addr, uint32_t *next_addr);
 void do_read(uint32_t addr, int len, uint8_t *buf);
@@ -60,3 +66,5 @@ int do_write(uint32_t addr, const uint8_t *src8, size_t len);
 
 const uint8_t *elem_search(const uint8_t *elem, uint8_t elem_id);
 int fsload_process(void);
+
+#endif // MICROPY_INCLUDED_STM32_MBOOT_MBOOT_H
