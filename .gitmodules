@@ -39,3 +39,6 @@
 [submodule "lib/libhydrogen"]
 	path = lib/libhydrogen
 	url = https://github.com/jedisct1/libhydrogen.git
+[submodule "ports/esp32/esp-idf"]
+	path = ports/esp32/esp-idf
+	url = https://github.com/espressif/esp-idf
